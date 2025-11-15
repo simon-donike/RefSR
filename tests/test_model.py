@@ -14,7 +14,7 @@ def test_model_forward_shapes():
     sr, att = model(s2_lr, pan_hr)
 
     # Check that forward runs and shapes are consistent
-    assert sr.shape == (2, 4, 64, 64)   # SR on HR grid
+    assert sr.shape == (2, 4, 64, 64)  # SR on HR grid
     assert att.shape == (2, 1, 32, 32)  # attention at LR (10 m) resolution
 
 

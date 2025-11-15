@@ -9,6 +9,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover
     pytest.skip("PyTorch is required to run the model tests.", allow_module_level=True)
 else:
+
     def _ensure_torchvision_stub() -> None:
         """Provide a minimal torchvision.ops.deform_conv2d fallback for tests."""
 
