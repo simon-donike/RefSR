@@ -3,3 +3,5 @@ torchvision
 pytorch-lightning
 omegaconf
 pytest
+rasterio
+numpy

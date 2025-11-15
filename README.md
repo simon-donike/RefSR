@@ -99,7 +99,7 @@ Legend
 [SYS]  = Lightning system defined in train.py
 [NET]  = Model components in model/
 
-
+```text
                           ┌───────────────────────────────────────────┐
                           │                 [CFG]                     │
                           │  config/example_config.yaml               │
@@ -184,7 +184,7 @@ Legend
                                              │  Lightning loss (L1/L2 vs upsampled  │
                                              │  s2_lr) + optimizer/scheduler update │
                                              └──────────────────────────────────────┘
-
+```
 
 
 ## TODOs/Ideas

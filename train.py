@@ -109,7 +109,9 @@ class PanS2System(pl.LightningModule):
 def main():
 
     cfg = OmegaConf.load("config/example_config.yaml")
-    datamodule = RandomPanS2DataModule(cfg)
+    # SyntheticPanS2FromTIFF
+    from data.example_sat import SyntheticPanS2FromTIFF
+    datamodule = SyntheticPanS2FromTIFF(cfg)
     model = PanS2System(cfg)
 
     tcfg = cfg.trainer
