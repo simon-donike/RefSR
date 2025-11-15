@@ -1,0 +1,42 @@
+# config.yaml
+
+data:
+  n_samples: 500
+  batch_size: 4
+  num_workers: 4
+  val_split: 0.1
+
+  s2_channels: 4        # RGBNIR
+  pan_channels: 1       # PAN
+  lr_size: 64           # 10m patch
+  scale: 4              # HR = lr_size * scale
+
+model:
+  s2_in_ch: 4
+  pan_in_ch: 1
+  base_ch: 64
+  out_ch: 4
+  sr_scale: 4
+
+loss:
+  type: "l1"             # l1 or l2 (mse)
+  reduction: "mean"
+
+optimizer:
+  name: "adam"
+  lr: 1e-4
+  weight_decay: 0.0
+  betas: [0.9, 0.999]
+  eps: 1e-8
+
+scheduler:
+  enable: false
+  name: "step_lr"        # step_lr, cosine, or whatever
+  step_size: 20
+  gamma: 0.5
+
+trainer:
+  max_epochs: 2
+  accelerator: "auto"
+  devices: 1
+  log_every_n_steps: 10
