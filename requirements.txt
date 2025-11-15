@@ -1,7 +1,12 @@
-torch
-torchvision
-pytorch-lightning
-omegaconf
-pytest
-rasterio
-numpy
+# This is only hardcoed for tests and auto-envs. 
+# For now it doesnt matter what exact versions
+
+torch==2.2.2
+torchvision==0.17.2
+pytorch-lightning==2.2.1
+omegaconf==2.3.0
+pytest==8.4.2
+rasterio==1.4.3
+numpy==1.26.4
+tqdm==4.66.4
+matplotlib==3.8.3

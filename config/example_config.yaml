@@ -1,6 +1,7 @@
 # config.yaml
 
 data:
+  type: "SyntheticPanS2DataModule"  # SyntheticPanS2DataModule or RandomPanS2DataModule
   n_samples: 500
   batch_size: 4
   num_workers: 4

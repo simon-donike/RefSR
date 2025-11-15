@@ -60,6 +60,9 @@ class SyntheticPanS2FromTIFF(Dataset):
 
         return torch.from_numpy(hr)   # (4, HR, HR)
 
+    def __len__(self):
+        return self.n_samples
+
     def __getitem__(self, idx):
         path = self.filepaths[idx % len(self.filepaths)]
 
@@ -101,9 +104,58 @@ class SyntheticPanS2FromTIFF(Dataset):
             "source_path": path,
         }
 
+# ------------------------------------------------------
+# Lightning DataModule
+# ------------------------------------------------------
+
+
+class SyntheticPanS2DataModule(pl.LightningDataModule):
+    def __init__(self, cfg):
+        super().__init__()
+        self.cfg = cfg
+
+    def setup(self, stage=None):
+        dcfg = self.cfg.data
+        full = SyntheticPanS2FromTIFF(root="/data2/simon/austria_buildings/hr_orthofoto")
+
+        val_size = int(dcfg.val_split * dcfg.n_samples)
+        train_size = dcfg.n_samples - val_size
+
+        self.train_dataset, self.val_dataset = random_split(
+            full,
+            [train_size, val_size],
+            generator=torch.Generator().manual_seed(42),
+        )
+
+    def train_dataloader(self):
+        dcfg = self.cfg.data
+        return DataLoader(
+            self.train_dataset,
+            batch_size=dcfg.batch_size,
+            shuffle=True,
+            num_workers=dcfg.num_workers,
+            pin_memory=True,
+        )
+
+    def val_dataloader(self):
+        dcfg = self.cfg.data
+        return DataLoader(
+            self.val_dataset,
+            batch_size=dcfg.batch_size,
+            shuffle=False,
+            num_workers=dcfg.num_workers,
+            pin_memory=True,
+        )
+
 
 if __name__ == "__main__":
-    ds_path = "/data2/simon/austria_buildings/hr_orthofoto"
-    dataset = SyntheticPanS2FromTIFF(ds_path, n_samples=1000)
+    from omegaconf import OmegaConf
+    conf = OmegaConf.load("config/example_config.yaml")
 
-    lr,hr = dataset[0]["s2_lr"], dataset[0]["s2_hr"]
+    ds_path = "/data2/simon/austria_buildings/hr_orthofoto"
+    dm = SyntheticPanS2DataModule(conf)
+    dm.setup()
+
+    from tqdm import tqdm
+    for i in tqdm(dm.train_dataloader()):
+        pass
