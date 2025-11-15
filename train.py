@@ -13,6 +13,7 @@ from data.example_data import RandomPanS2DataModule
 # Lightning Module
 # -------------------------------------------------------
 
+
 class PanS2System(pl.LightningModule):
     def __init__(self, cfg):
         super().__init__()
@@ -103,6 +104,7 @@ class PanS2System(pl.LightningModule):
 # -------------------------------------------------------
 # Main
 # -------------------------------------------------------
+
 
 def main():
 

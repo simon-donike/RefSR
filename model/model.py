@@ -4,8 +4,8 @@ import torch.nn.functional as F
 from typing import Optional
 
 # import model blocks
-from model.encoders import PanFeatureEncoder, S2Spot10mEncoder, CrossAttentionMap, SRHead
-
+from model.encoders import PanFeatureEncoder, S2Spot10mEncoder
+from model.blocks import CrossAttentionMap, SRHead
 
 class PanS2FusionSR(nn.Module):
     """
@@ -106,5 +106,33 @@ if __name__ == "__main__":
     s2 = torch.randn(2, 4, 64, 64)         # 10 m
     pan_hr = torch.randn(2, 1, 256, 256)   # 2.5 m grid (4×)
     out, att = model(s2, pan_hr)
-    print(out.shape, att.shape)
-    # Should be → torch.Size([2, 4, 256, 256])  torch.Size([2, 1, 64, 64])
+
+    # -----------------------------------------------------------
+    # Sanity Check
+    # -----------------------------------------------------------
+    def count_params(module):
+        return sum(p.numel() for p in module.parameters() if p.requires_grad)
+    total_params = count_params(model)
+    pan_encoder_params = count_params(model.pan_encoder_hr)
+    s2_encoder_params = count_params(model.s2_encoder_10m)
+    spot_encoder_params = count_params(model.spot_encoder_10m)
+    sr_head_params = count_params(model.sr_head)
+    cross_att_params = count_params(model.cross_att)
+
+    print("\n=== PanS2FusionSR Sanity Check ===")
+    print(f" Input S2 LR:         {tuple(s2.shape)}")
+    print(f" Input PAN HR:        {tuple(pan_hr.shape)}")
+    print("----------------------------------------------")
+    print(f" Output SR S2:        {tuple(out.shape)}")
+    print(f" Attention map (10m): {tuple(att.shape)}")
+    print("==============================================\n")
+
+    print("=== Parameter Summary (Trainable) ===")
+    print(f" Total parameters:               {total_params:,}")
+    print("----------------------------------------------")
+    print(f" PAN HR encoder:                 {pan_encoder_params:,}")
+    print(f" S2 10m encoder:                 {s2_encoder_params:,}")
+    print(f" SPOT 10m encoder:               {spot_encoder_params:,}")
+    print(f" Cross-attention module:         {cross_att_params:,}")
+    print(f" Super-resolution head:          {sr_head_params:,}")
+    print("==============================================\n")
