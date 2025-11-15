@@ -1,0 +1,136 @@
+# =========================
+# OS-SPECIFIC (macOS / Linux)
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+
+# Thumbnails
+._*
+
+# Linux trash
+.Trash-*
+
+# =========================
+# PYTHON GENERAL
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dylib
+
+# Virtual environments
+venv/
+.env/
+.env*/ 
+*.env
+.venv/
+pip-wheel-metadata/
+pip-selfcheck.json
+
+# Build / packaging
+build/
+dist/
+develop-eggs/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =========================
+# JUPYTER / NOTEBOOKS
+# =========================
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+.jupyter/
+
+# =========================
+# ML / DL PROJECTS
+# =========================
+# Checkpoints / weights
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# Model outputs & predictions
+*.npz
+*.npy
+*.npz.zip
+*.h5
+
+# Training runs and logs
+wandb/
+lightning_logs/
+tensorboard/
+tb_logs/
+mlruns/
+logs/
+results/
+outputs/
+runs/
+
+# HuggingFace
+huggingface/
+hf_cache/
+transformers_cache/
+
+# =========================
+# DATA / TEMP FILES
+# =========================
+*.csv~
+*.tmp
+*.temp
+*.log
+*.pickle
+*.pkl
+*.dat
+*.cache
+.cache/
+.cache_tmp/
+tmp/
+temp/
+*.zip
+*.tar
+*.tar.gz
+*.gz
+
+# =========================
+# EDITORS / IDEs
+# =========================
+
+# VS Code
+.vscode/
+.history/
+.code-profile/
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# =========================
+# MISC
+# =========================
+*.swp
+*.swo
+*~
+*.orig
+
+# ===================================
+# OPTIONAL: Ignore all large files by extension
+# ===================================
+*.tif
+*.tiff
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.mov

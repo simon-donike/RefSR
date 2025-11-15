@@ -101,10 +101,12 @@ class MultiConv(nn.Module):
 
 class SRHead(nn.Module):
     """
-    DeformableConv → BN → ReLU → 2×Residual → PixelShuffle×scale → Conv(out_ch)
+    DeformableConv → BN → ReLU → 2×Residual → (optional PixelShuffle) → Conv(out_ch)
     """
-    def __init__(self, in_ch, base_ch=64, out_ch=4, scale=4):
+    def __init__(self, in_ch, base_ch=64, out_ch=4, scale=1):
         super().__init__()
+        self.scale = scale
+
         self.pre = nn.Sequential(
             DeformableConv2d(in_ch, base_ch, kernel_size=3, padding=1),
             nn.BatchNorm2d(base_ch),
@@ -115,9 +117,14 @@ class SRHead(nn.Module):
             ResidualBlock(base_ch),
         )
 
-        # one PixelShuffle with r=scale
-        self.upconv = nn.Conv2d(base_ch, base_ch * (scale ** 2), kernel_size=3, padding=1)
-        self.pixel_shuffle = nn.PixelShuffle(scale)
+        if scale > 1:
+            self.upconv = nn.Conv2d(
+                base_ch, base_ch * (scale ** 2), kernel_size=3, padding=1
+            )
+            self.pixel_shuffle = nn.PixelShuffle(scale)
+        else:
+            self.upconv = nn.Identity()
+            self.pixel_shuffle = nn.Identity()
 
         self.final = nn.Conv2d(base_ch, out_ch, kernel_size=3, padding=1)
 
@@ -128,3 +135,4 @@ class SRHead(nn.Module):
         x = self.pixel_shuffle(x)
         x = self.final(x)
         return x
+
