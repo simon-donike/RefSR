@@ -3,7 +3,7 @@
 MkDocs renders this section from the source docstrings using
 [`mkdocstrings`](https://mkdocstrings.github.io/). Keep the inline documentation
 up-to-date and re-run ``mkdocs build`` (or open the live preview) to refresh the
-content automatically.
+content automatically. 
 
 ## Model
 
