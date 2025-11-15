@@ -1,6 +1,8 @@
 # RefSR: Reference-Guided Pan+S2 Super-Resolution
 
-![Model Style](resources/model_style.png)
+![Example](resources/example_1.png)
+
+
 
 RefSR is an experimental PyTorch Lightning project that prototypes a reference-guided
 super-resolution (RefSR) model for fusing Sentinel-2 multispectral inputs with
@@ -91,6 +93,10 @@ Current Example of the model outputs:
 
 ## Workflow
 RefSR Workflow Overview
+
+![Model Style](resources/model_style.png)
+
+
 
 Legend
 ------

@@ -3,6 +3,11 @@
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
 
+# Set visible GPUs
+import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
 
 # -------------------------------------------------------
 # Main
@@ -13,17 +18,9 @@ def main():
     # Get Config
     cfg = OmegaConf.load("config/example_config.yaml")
 
-    # Get Data
-    if cfg.data.type == "SyntheticPanS2DataModule":
-        from data.example_sat import SyntheticPanS2DataModule
-
-        datamodule = SyntheticPanS2DataModule(cfg)
-    elif cfg.data.type == "RandomPanS2DataModule":
-        from data.example_data import RandomPanS2DataModule
-
-        datamodule = RandomPanS2DataModule(cfg)
-    else:
-        raise ValueError(f"Unknown data type: {cfg.data.type}")
+    # Get DataModule
+    from data.dataset_selector import select_dataset
+    datamodule = select_dataset(cfg)
 
     # Get Model
     from model.sr_model import PanS2System
@@ -33,6 +30,7 @@ def main():
     tcfg = cfg.trainer
     trainer = pl.Trainer(
         max_epochs=tcfg.max_epochs,
+        val_check_interval=tcfg.val_check_interval,
         accelerator=tcfg.accelerator,
         devices=tcfg.devices,
         log_every_n_steps=tcfg.log_every_n_steps,

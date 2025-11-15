@@ -3,7 +3,6 @@
 data:
   type: "SyntheticPanS2FromTIFF"  # SyntheticPanS2FromTIFF or RandomPanS2Dataset
   dataset_path: "/data2/simon/austria_buildings/hr_orthofoto"
-  n_samples: 500
   batch_size: 32
   num_workers: 8
   val_split: 0.1
@@ -38,7 +37,9 @@ scheduler:
   gamma: 0.5
 
 trainer:
-  max_epochs: 2
+  max_epochs: 10
+  val_check_interval: 0.1
+
   accelerator: "cuda"
   devices: 1
-  log_every_n_steps: 10
+  log_every_n_steps: 100

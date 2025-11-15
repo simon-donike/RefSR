@@ -55,7 +55,7 @@ class SyntheticPanS2FromTIFF(Dataset):
         elif self.phase == "val":
             np.random.seed(42)
             np.random.shuffle(self.filepaths)
-            self.filepaths = self.filepaths[int(0.2*len(self.filepaths)):]
+            self.filepaths = self.filepaths[int(0.8*len(self.filepaths)):]
         else:
             raise ValueError(f"Unknown phase: {self.phase}")
 

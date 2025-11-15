@@ -11,19 +11,16 @@ class RandomPanS2Dataset(Dataset):
 
     def __init__(
         self,
-        n_samples=1000,
-        s2_channels=4,  # RGBNIR by default
-        pan_channels=1,
-        lr_size=64,  # 10 m patch size
-        scale=4,  # HR PAN resolution is x4
+        cfg
     ):
         super().__init__()
-        self.n_samples = n_samples
-        self.s2_channels = s2_channels
-        self.pan_channels = pan_channels
-        self.lr_size = lr_size
-        self.hr_size = lr_size * scale
-        self.scale = scale
+        self.n_samples = 1000
+        self.s2_channels = cfg.data.s2_channels
+        self.pan_channels = cfg.data.pan_channels
+        self.lr_size = cfg.data.lr_size
+        self.scale = cfg.model.sr_scale
+        self.hr_size = self.lr_size * self.scale
+
 
     def __len__(self):
         return self.n_samples
