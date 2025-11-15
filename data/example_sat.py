@@ -23,7 +23,7 @@ class SyntheticPanS2FromTIFF(Dataset):
     def __init__(
         self,
         root,
-        n_samples=1000,
+        phase="train",
         pattern="*.tif",
         s2_channels=4,
         pan_channels=1,
@@ -35,12 +35,24 @@ class SyntheticPanS2FromTIFF(Dataset):
         if len(self.filepaths) == 0:
             raise RuntimeError(f"No TIFFs found in {root}")
 
-        self.n_samples = n_samples
         self.s2_channels = s2_channels
         self.pan_channels = pan_channels
         self.lr_size = lr_size
         self.hr_size = lr_size * scale
         self.scale = scale
+
+        #phase
+        self.phase = phase
+        if self.phase == "train":
+            np.random.seed(42)
+            np.random.shuffle(self.filepaths)
+            self.filepaths = self.filepaths[:int(0.8*len(self.filepaths))]
+        elif self.phase == "val":
+            np.random.seed(42)
+            np.random.shuffle(self.filepaths)
+            self.filepaths = self.filepaths[int(0.2*len(self.filepaths)):]
+        else:
+            raise ValueError(f"Unknown phase: {self.phase}")
 
     def _read_random_hr_patch(self, path):
         with rasterio.open(path) as src:
@@ -61,7 +73,7 @@ class SyntheticPanS2FromTIFF(Dataset):
         return torch.from_numpy(hr)   # (4, HR, HR)
 
     def __len__(self):
-        return self.n_samples
+        return len(self.filepaths)
 
     def __getitem__(self, idx):
         path = self.filepaths[idx % len(self.filepaths)]
@@ -114,17 +126,21 @@ class SyntheticPanS2DataModule(pl.LightningDataModule):
         super().__init__()
         self.cfg = cfg
 
-    def setup(self, stage=None):
-        dcfg = self.cfg.data
-        full = SyntheticPanS2FromTIFF(root="/data2/simon/austria_buildings/hr_orthofoto")
-
-        val_size = int(dcfg.val_split * dcfg.n_samples)
-        train_size = dcfg.n_samples - val_size
-
-        self.train_dataset, self.val_dataset = random_split(
-            full,
-            [train_size, val_size],
-            generator=torch.Generator().manual_seed(42),
+        self.train_dataset = SyntheticPanS2FromTIFF(
+            root=cfg.data.dataset_path,
+            phase="train",
+            s2_channels=cfg.model.s2_in_ch,
+            pan_channels=cfg.model.pan_in_ch,
+            lr_size=cfg.data.lr_size,
+            scale=cfg.data.scale,
+        )
+        self.val_dataset = SyntheticPanS2FromTIFF(
+            root=cfg.data.dataset_path,
+            phase="val",
+            s2_channels=cfg.model.s2_in_ch,
+            pan_channels=cfg.model.pan_in_ch,
+            lr_size=cfg.data.lr_size,
+            scale=cfg.data.scale,
         )
 
     def train_dataloader(self):
@@ -154,7 +170,6 @@ if __name__ == "__main__":
 
     ds_path = "/data2/simon/austria_buildings/hr_orthofoto"
     dm = SyntheticPanS2DataModule(conf)
-    dm.setup()
 
     from tqdm import tqdm
     for i in tqdm(dm.train_dataloader()):

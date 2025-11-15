@@ -2,6 +2,7 @@
 
 data:
   type: "SyntheticPanS2DataModule"  # SyntheticPanS2DataModule or RandomPanS2DataModule
+  dataset_path: "/data2/simon/austria_buildings/hr_orthofoto"
   n_samples: 500
   batch_size: 4
   num_workers: 4

@@ -37,15 +37,8 @@ class PanS2System(pl.LightningModule):
         sr_pred, _ = self.model(
             batch["s2_lr"], batch["spot_pan_hr"], batch["spot_pan_lr"]
         )
-
-        # simple pseudo-target
-        target = F.interpolate(
-            batch["s2_lr"],
-            size=sr_pred.shape[-2:],
-            mode="bilinear",
-            align_corners=False,
-        )
-
+        target = batch["s2_hr"]
+        
         if self.loss_cfg.type == "l1":
             return F.l1_loss(sr_pred, target, reduction=self.loss_cfg.reduction)
         elif self.loss_cfg.type == "l2":
