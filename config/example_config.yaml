@@ -1,11 +1,11 @@
 # config.yaml
 
 data:
-  type: "SyntheticPanS2DataModule"  # SyntheticPanS2DataModule or RandomPanS2DataModule
+  type: "SyntheticPanS2FromTIFF"  # SyntheticPanS2FromTIFF or RandomPanS2Dataset
   dataset_path: "/data2/simon/austria_buildings/hr_orthofoto"
   n_samples: 500
-  batch_size: 4
-  num_workers: 4
+  batch_size: 32
+  num_workers: 8
   val_split: 0.1
 
   s2_channels: 4        # RGBNIR
@@ -39,6 +39,6 @@ scheduler:
 
 trainer:
   max_epochs: 2
-  accelerator: "auto"
+  accelerator: "cuda"
   devices: 1
   log_every_n_steps: 10

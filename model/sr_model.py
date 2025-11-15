@@ -38,7 +38,7 @@ class PanS2System(pl.LightningModule):
             batch["s2_lr"], batch["spot_pan_hr"], batch["spot_pan_lr"]
         )
         target = batch["s2_hr"]
-        
+
         if self.loss_cfg.type == "l1":
             return F.l1_loss(sr_pred, target, reduction=self.loss_cfg.reduction)
         elif self.loss_cfg.type == "l2":
@@ -56,22 +56,22 @@ class PanS2System(pl.LightningModule):
         self.log("val/loss", loss, prog_bar=True, on_epoch=True)
         return loss
 
-    def on_after_backward(self):
+    def on_validation_epoch_end(self):
         # save imgs
         val_loader = self.trainer.datamodule.val_dataloader()
         val_batch = next(iter(val_loader))
         sr_pred, _ = self.model(
-            val_batch["s2_lr"],
-            val_batch["spot_pan_hr"],
-            val_batch["spot_pan_lr"],
+            val_batch["s2_lr"].to(self.device),
+            val_batch["spot_pan_hr"].to(self.device),
+            val_batch["spot_pan_lr"].to(self.device),
         )
-        target = F.interpolate(
-            val_batch["s2_lr"],
-            size=sr_pred.shape[-2:],
-            mode="bilinear",
-            align_corners=False,
+        # Everything to CPU
+        val_batch = {
+            k: (v.cpu() if hasattr(v, "cpu") else v) for k, v in val_batch.items()
+        }
+        self.create_visualization(
+            batch=val_batch, sr_pred=sr_pred.cpu(), target=val_batch["s2_hr"]
         )
-        self.create_visualization(val_batch, sr_pred, target)
 
     def create_visualization(self, batch, sr_pred, target):
         if plt is None:

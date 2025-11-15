@@ -22,15 +22,20 @@ class SyntheticPanS2FromTIFF(Dataset):
 
     def __init__(
         self,
-        root,
+        config,
         phase="train",
-        pattern="*.tif",
-        s2_channels=4,
-        pan_channels=1,
-        lr_size=64,
-        scale=4,
-    ):
+        ):
+    
         super().__init__()
+
+        # get config
+        root = config.data.dataset_path
+        pattern = "*.tif"
+        s2_channels = config.data.s2_channels
+        pan_channels = 1
+        lr_size = 64
+        scale = 4
+
         self.filepaths = sorted(glob.glob(os.path.join(root, pattern)))
         if len(self.filepaths) == 0:
             raise RuntimeError(f"No TIFFs found in {root}")
@@ -115,62 +120,3 @@ class SyntheticPanS2FromTIFF(Dataset):
             "index": idx,
             "source_path": path,
         }
-
-# ------------------------------------------------------
-# Lightning DataModule
-# ------------------------------------------------------
-
-
-class SyntheticPanS2DataModule(pl.LightningDataModule):
-    def __init__(self, cfg):
-        super().__init__()
-        self.cfg = cfg
-
-        self.train_dataset = SyntheticPanS2FromTIFF(
-            root=cfg.data.dataset_path,
-            phase="train",
-            s2_channels=cfg.model.s2_in_ch,
-            pan_channels=cfg.model.pan_in_ch,
-            lr_size=cfg.data.lr_size,
-            scale=cfg.data.scale,
-        )
-        self.val_dataset = SyntheticPanS2FromTIFF(
-            root=cfg.data.dataset_path,
-            phase="val",
-            s2_channels=cfg.model.s2_in_ch,
-            pan_channels=cfg.model.pan_in_ch,
-            lr_size=cfg.data.lr_size,
-            scale=cfg.data.scale,
-        )
-
-    def train_dataloader(self):
-        dcfg = self.cfg.data
-        return DataLoader(
-            self.train_dataset,
-            batch_size=dcfg.batch_size,
-            shuffle=True,
-            num_workers=dcfg.num_workers,
-            pin_memory=True,
-        )
-
-    def val_dataloader(self):
-        dcfg = self.cfg.data
-        return DataLoader(
-            self.val_dataset,
-            batch_size=dcfg.batch_size,
-            shuffle=False,
-            num_workers=dcfg.num_workers,
-            pin_memory=True,
-        )
-
-
-if __name__ == "__main__":
-    from omegaconf import OmegaConf
-    conf = OmegaConf.load("config/example_config.yaml")
-
-    ds_path = "/data2/simon/austria_buildings/hr_orthofoto"
-    dm = SyntheticPanS2DataModule(conf)
-
-    from tqdm import tqdm
-    for i in tqdm(dm.train_dataloader()):
-        pass
